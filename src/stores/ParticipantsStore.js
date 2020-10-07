@@ -1,7 +1,7 @@
 import omit from 'just-omit'
 import { derived, writable, get } from 'svelte/store'
 
-function createSingleParticipantStore() {
+function createSingleParticipantStore(isLocal = false) {
   const fieldsStore = writable({
     jid: null,
     role: null,
@@ -17,6 +17,8 @@ function createSingleParticipantStore() {
     size: null,
     // boolean
     visible: false,
+    // boolean
+    isLocal,
   })
 
   // Stores JitsiTrack by track type ('audio' | 'video' | 'desktop')
@@ -32,9 +34,18 @@ function createSingleParticipantStore() {
 
   return {
     subscribe: store.subscribe,
-    // update: fieldsStore.update,
-    fields: fieldsStore,
-    tracks: tracksStore,
+
+    setJid: (jid) => {
+      fieldsStore.update(($fields) => ({ ...$fields, jid }))
+    },
+
+    setRole: (role) => {
+      fieldsStore.update(($fields) => ({ ...$fields, role }))
+    },
+
+    setAudioLevel: (audioLevel) => {
+      fieldsStore.update(($fields) => ({ ...$fields, audioLevel }))
+    },
 
     updateFieldsFromJitsiParticipant: (participant) => {
       fieldsStore.update(($fields) => {
@@ -47,14 +58,22 @@ function createSingleParticipantStore() {
     },
 
     addTrack: (track) => {
+      const trackType = track.getType()
       tracksStore.update(($tracks) => ({
         ...$tracks,
-        [track.getType()]: track,
+        [trackType]: track,
       }))
     },
-    removeTrack: (trackType) => {
+
+    removeTrack: (track) => {
+      const trackType = track.getType()
       tracksStore.update(($tracks) => omit($tracks, [trackType]))
     },
+
+    // Expose read-only versions of fields & tracks stores so
+    // they can be subscribed to individually
+    fieldsStore: { subscribe: fieldsStore.subscribe },
+    tracksStore: { subscribe: tracksStore.subscribe },
   }
 }
 
@@ -90,11 +109,4 @@ function createParticipantsStore() {
   }
 }
 
-// A store Participant data for the local participant
-const localParticipant = createSingleParticipantStore()
-
-export {
-  localParticipant,
-  createParticipantsStore,
-  createSingleParticipantStore,
-}
+export { createParticipantsStore, createSingleParticipantStore }

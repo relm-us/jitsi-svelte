@@ -2,8 +2,8 @@ import { writable, derived, get } from 'svelte/store'
 import omit from 'just-omit'
 
 import {
-  localParticipant as localParticipantStore,
   createParticipantsStore,
+  createSingleParticipantStore,
 } from './ParticipantsStore.js'
 import { trackDirection, wireEventListeners } from '/utils/events.js'
 
@@ -23,34 +23,40 @@ const ConferenceState = {
 function createSingleConferenceStore(conferenceId, connectionStore) {
   const stateStore = writable(ConferenceState.INITIAL)
 
-  const localJidStore = writable(null)
+  // Each conference gets a "localParticipantStore" which is what represents
+  // the user & the user's local tracks in this particular conference (player
+  // can potentially be connected to multiple rooms at once).
+  const localParticipantStore = createSingleParticipantStore(true)
 
   // A store of objects, keys are participantIds and values are stores
   const remoteParticipantsStore = createParticipantsStore()
+
+  let localParticipantId
+  localParticipantStore.subscribe(
+    ($localParticipant) => (localParticipantId = $localParticipant.jid)
+  )
 
   const store = derived(
     connectionStore,
     ($connection, set) => {
       if ($connection) {
         const conference = $connection.initJitsiConference(conferenceId, {
+          // per latest recommendation:
+          // https://community.jitsi.org/t/sctp-channels-deprecation-use-websockets/79408/8
           openBridgeChannel: 'websocket',
         })
-        if (!conference) {
-          console.error('conference is null')
-        }
 
         const setStatus = (state) => {
           switch (state) {
             case ConferenceState.JOINING:
               // Record the ID we're given to identify "self"
-              localJidStore.set(conference.myUserId())
+              localParticipantStore.setJid(conference.myUserId())
               break
             case ConferenceState.JOINED:
               set(conference)
               break
             default:
               set(null)
-              localJidStore.set(null)
           }
           stateStore.set(state)
         }
@@ -61,14 +67,11 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
           if (track.isLocal()) {
             localParticipantStore[fnName](track)
           } else {
-            const participantId = track.getParticipantId()
-            if (participantId) {
-              remoteParticipantsStore.updateParticipant(
-                participantId,
-                (remoteParticipant, _didAddParticipant) => {
-                  remoteParticipant[fnName](track)
-                }
-              )
+            const pId = track.getParticipantId()
+            if (pId) {
+              remoteParticipantsStore.updateParticipant(pId, (pStore) => {
+                pStore[fnName](track)
+              })
             } else {
               console.warn(`Track does not have participantId`, track)
             }
@@ -89,30 +92,24 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
             },
             KICKED: () => setStatus(ConferenceState.KICKED),
 
-            USER_JOINED: (participantId, participant) => {
-              remoteParticipantsStore.updateParticipant(
-                participantId,
-                (remoteParticipant, _didAddParticipant) => {
-                  remoteParticipant.updateFieldsFromJitsiParticipant(
-                    participant
-                  )
-                }
-              )
-            },
-            USER_LEFT: (participantId) => {
-              remoteParticipantsStore.update(($participants) => {
-                return omit($participants, [participantId])
+            USER_JOINED: (pId, participant) => {
+              remoteParticipantsStore.updateParticipant(pId, (pStore) => {
+                pStore.updateFieldsFromJitsiParticipant(participant)
               })
             },
-            USER_ROLE_CHANGED: (participantId, role) => {
-              remoteParticipantsStore.updateParticipant(
-                participantId,
-                (remoteParticipant, _didAddParticipant) => {
-                  remoteParticipant.fields.update(($fields) => {
-                    return { ...$fields, role }
-                  })
-                }
-              )
+            USER_LEFT: (pId) => {
+              remoteParticipantsStore.update(($participants) => {
+                return omit($participants, [pId])
+              })
+            },
+            USER_ROLE_CHANGED: (pId, role) => {
+              if (pId === localParticipantId) {
+                localParticipantStore.setRole(role)
+              } else {
+                remoteParticipantsStore.updateParticipant(pId, (pStore) => {
+                  pStore.setRole(role)
+                })
+              }
             },
 
             TRACK_ADDED: (track) => {
@@ -122,15 +119,14 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
             TRACK_REMOVED: (track) => {
               addRemoveTrack(track, 'remove')
             },
-            TRACK_AUDIO_LEVEL_CHANGED: (participantId, audioLevel) => {
-              remoteParticipantsStore.updateParticipant(
-                participantId,
-                (remoteParticipant, _didAddParticipant) => {
-                  remoteParticipant.fields.update(($fields) => {
-                    return { ...$fields, audioLevel }
-                  })
-                }
-              )
+            TRACK_AUDIO_LEVEL_CHANGED: (pId, audioLevel) => {
+              if (pId === localParticipantId) {
+                localParticipantStore.setAudioLevel(audioLevel)
+              } else {
+                remoteParticipantsStore.updateParticipant(pId, (pStore) =>
+                  pStore.setAudioLevel(audioLevel)
+                )
+              }
             },
           },
         }
@@ -201,11 +197,16 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
    * at least one subscriber to `store`, so that the conference is joined.
    */
   const allParticipantsStore = derived(
-    [localParticipantStore, remoteParticipantsStore, store],
+    [
+      localParticipantStore,
+      remoteParticipantsStore,
+      store /* ConferenceStore */,
+    ],
     ([$localParticipant, $remoteParticipants, $store], set) => {
       if ($store) {
         const allParticipants = {}
 
+        // Add remote participants
         for (let [participantId, remoteParticipantStore] of Object.entries(
           $remoteParticipants
         )) {
@@ -216,21 +217,22 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
 
         // Add local participant, if present
         if ($localParticipant && $localParticipant.jid) {
-          allParticipants[$localParticipant.jid] = $localParticipantStore
+          allParticipants[$localParticipant.jid] = localParticipantStore
         }
 
         set(allParticipants)
       } else {
+        // If the ConferenceStore is null, then we consider the conference to have no participants
         set({})
       }
     },
+    // Initial allParticipantsStore value
     {}
   )
 
   return {
     subscribe: store.subscribe,
     state: stateStore,
-    localJid: localJidStore,
     participants: allParticipantsStore,
   }
 }

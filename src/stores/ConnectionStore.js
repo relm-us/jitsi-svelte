@@ -110,7 +110,9 @@ function createConnectionStore(configStore) {
     subscribe: store.subscribe,
     state: stateStore,
     quality: qualityStore,
-    conferences: createConferencesStore(store),
+
+    // Each connection can have multiple conferences (rooms)
+    conferencesStore: createConferencesStore(store),
   }
 }
 
