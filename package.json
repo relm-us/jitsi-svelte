@@ -1,6 +1,6 @@
 {
   "name": "jitsi-svelte",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Reactive svelte3 stores for lib-jitsi-meet",
   "main": "src/index.js",
   "repository": "https://github.com/relm-us/jitsi-svelte",
