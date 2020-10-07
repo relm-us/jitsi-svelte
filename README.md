@@ -2,7 +2,9 @@
 
 This library allows you to easily create your own custom [Jitsi](https://jitsi.org/jitsi-meet/) client, in the [Svelte](https://svelte.dev/) framework.
 
-![Simplified Cam/Mic Setup](example/images/screenshot.png)
+<div align="center">
+  <img src="example/images/screenshot.png" width="350" alt="Simplified Cam/Mic Setup">
+</div>
 
 Jitsi is a free, open-source, web-based video conferencing app that has a handy library called lib-jitsi-meet. However, there are quite a few intricacies to getting it working well, and if you're writing a Svelte3-based app, there is some additional complexity in getting all of the events to work together.
 
