@@ -9,10 +9,16 @@
 
   let mirrorPage = true
 
+  // Note that as soon as you provide a ConfigStore for the connection, it will connect.
+  // If you want to delay connecting until some future point, just use 'null' as the store.
   const connection = createConnectionStore(defaultConfigStore)
 
   const conferences = connection.conferencesStore
 
+  // The conference room to join. You can join now or later (e.g. after some action). You
+  // can join multiple conferences simultaneously. Joining a conference is independent of
+  // actually sharing your video/audio--the Mirror page lets the user set up their video/
+  // audio and share it with the conference room.
   conferences.join('jitsi-svelte-test')
 </script>
 

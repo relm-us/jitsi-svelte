@@ -2952,8 +2952,10 @@ isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
 
-"jitsi-svelte@file:./..":
-  version "1.0.0"
+jitsi-svelte@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/jitsi-svelte/-/jitsi-svelte-0.1.0.tgz#ae4caa544dcffafb62dbd6c25a8dac080a42bf05"
+  integrity sha512-xrpepSd+HxfMlR09DrcbpMhMNZZem6MAWoFPJpE1QSZVxe2bluuaqPpHmxK4mVP6KQFxGpgXuxSoPP3bEOhFVg==
   dependencies:
     just-omit "^1.1.0"
     keycode-js "^3.1.0"

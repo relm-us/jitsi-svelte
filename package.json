@@ -1,8 +1,8 @@
 {
   "name": "jitsi-svelte",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reactive svelte3 stores for lib-jitsi-meet",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "repository": "https://github.com/relm-us/jitsi-svelte",
   "author": "Duane Johnson",
   "license": "MIT",
@@ -19,12 +19,5 @@
   "dependencies": {
     "just-omit": "^1.1.0",
     "keycode-js": "^3.1.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "parcel build src/index.js",
-    "test": "jest --watch"
   }
 }
