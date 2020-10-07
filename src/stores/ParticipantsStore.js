@@ -1,5 +1,6 @@
 import omit from 'just-omit'
 import { derived, writable, get } from 'svelte/store'
+import { wireEventListeners } from '/utils/events.js'
 
 function createSingleParticipantStore(isLocal = false) {
   const fieldsStore = writable({
@@ -32,6 +33,16 @@ function createSingleParticipantStore(isLocal = false) {
     {}
   )
 
+  const events = {
+    audio: {
+      track: {
+        TRACK_AUDIO_LEVEL_CHANGED: (audioLevel) => {
+          fieldsStore.update(($fields) => ({ ...$fields, audioLevel }))
+        },
+      },
+    },
+  }
+
   return {
     subscribe: store.subscribe,
 
@@ -58,16 +69,26 @@ function createSingleParticipantStore(isLocal = false) {
     },
 
     addTrack: (track) => {
-      const trackType = track.getType()
-      tracksStore.update(($tracks) => ({
-        ...$tracks,
-        [trackType]: track,
-      }))
+      if (track) {
+        const trackType = track.getType()
+        if (events[trackType]) {
+          wireEventListeners('add', track, events[trackType])
+        }
+        tracksStore.update(($tracks) => ({
+          ...$tracks,
+          [trackType]: track,
+        }))
+      }
     },
 
     removeTrack: (track) => {
-      const trackType = track.getType()
-      tracksStore.update(($tracks) => omit($tracks, [trackType]))
+      if (track) {
+        const trackType = track.getType()
+        if (events[trackType]) {
+          wireEventListeners('remove', track, events[trackType])
+        }
+        tracksStore.update(($tracks) => omit($tracks, [trackType]))
+      }
     },
 
     // Expose read-only versions of fields & tracks stores so

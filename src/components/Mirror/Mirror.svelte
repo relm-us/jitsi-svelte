@@ -5,10 +5,10 @@
   import canAutoPermit from '/jitsi/canAutoPermit.js'
   import { deviceList, selectedDevices } from '/stores/DeviceListStore.js'
   import {
-    localTracks,
+    localTracksStore,
     localAudioLevel,
     requestedTracks,
-  } from '/stores/LocalTrackStore.js'
+  } from '/stores/LocalTracksStore.js'
 
   import Video from '/components/Video'
   import Audio from '/components/Audio'
@@ -79,7 +79,7 @@
    * @returns hasPermission, blocked(?), tracks
    */
   async function requestPermissions() {
-    hasPermission = await localTracks.request()
+    hasPermission = await localTracksStore.request()
 
     // Visually indicate that the request was blocked if we don't have permission
     setRequestBlocked(!hasPermission)
@@ -109,9 +109,9 @@
   {#if hasPermission}
     <div class="video-box">
       {#if letMeHearMyself}
-        <Audio track={$localTracks.audio} />
+        <Audio track={$localTracksStore.audio} />
       {/if}
-      <Video track={$localTracks.video} mirror={true} />
+      <Video track={$localTracksStore.video} mirror={true} />
       <div class="video-stack overlay">
         {#if !$audioRequested && !$videoRequested}
           <div class="message">Join with cam and mic off</div>

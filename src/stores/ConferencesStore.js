@@ -5,6 +5,9 @@ import {
   createParticipantsStore,
   createSingleParticipantStore,
 } from './ParticipantsStore.js'
+import { localTracksStore } from '/stores/LocalTracksStore.js'
+
+import { addLocalTracksToConference } from '/jitsi/tracks.js'
 import { trackDirection, wireEventListeners } from '/utils/events.js'
 
 const CLEANUP_EVENT_LISTENERS_MAX_TIMEOUT = 4000
@@ -28,6 +31,12 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
   // can potentially be connected to multiple rooms at once).
   const localParticipantStore = createSingleParticipantStore(true)
 
+  // Whenever local tracks exist, add them to the localParticipant for this conference
+  localTracksStore.subscribe(($tracks) => {
+    localParticipantStore.addTrack($tracks.audio)
+    localParticipantStore.addTrack($tracks.video)
+  })
+
   // A store of objects, keys are participantIds and values are stores
   const remoteParticipantsStore = createParticipantsStore()
 
@@ -44,6 +53,11 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
           // per latest recommendation:
           // https://community.jitsi.org/t/sctp-channels-deprecation-use-websockets/79408/8
           openBridgeChannel: 'websocket',
+        })
+
+        localTracksStore.subscribe(($tracks) => {
+          const tracks = Object.values($tracks)
+          addLocalTracksToConference(conference, tracks)
         })
 
         const setStatus = (state) => {
@@ -65,6 +79,7 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
           let fnName = trackDirection(direction)
 
           if (track.isLocal()) {
+            // Track gets added to localParticipantStore
             localParticipantStore[fnName](track)
           } else {
             const pId = track.getParticipantId()
@@ -80,6 +95,10 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
 
         const events = {
           conference: {
+            /**
+             * Events that affect the participant's status in the conference
+             */
+
             CONFERENCE_JOINED: () => setStatus(ConferenceState.JOINED),
             CONFERENCE_LEFT: () => {
               wireEventListeners('remove', conference, events)
@@ -91,6 +110,10 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
               setStatus(ConferenceState.ERROR)
             },
             KICKED: () => setStatus(ConferenceState.KICKED),
+
+            /**
+             * Events that can be used to update participant's metadata
+             */
 
             USER_JOINED: (pId, participant) => {
               remoteParticipantsStore.updateParticipant(pId, (pStore) => {
@@ -112,21 +135,17 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
               }
             },
 
+            /**
+             * "Track" events: we get notified whenever a remote participant adds an
+             * audio or video track to the conference, and we can then attach it to
+             * the local representation of the corresponding participant.
+             */
+
             TRACK_ADDED: (track) => {
               addRemoveTrack(track, 'add')
-              // track.addEventListener(JitsiMeetJS.events.track.TRACK_AUDIO_LEVEL_CHANGED)
             },
             TRACK_REMOVED: (track) => {
               addRemoveTrack(track, 'remove')
-            },
-            TRACK_AUDIO_LEVEL_CHANGED: (pId, audioLevel) => {
-              if (pId === localParticipantId) {
-                localParticipantStore.setAudioLevel(audioLevel)
-              } else {
-                remoteParticipantsStore.updateParticipant(pId, (pStore) =>
-                  pStore.setAudioLevel(audioLevel)
-                )
-              }
             },
           },
         }

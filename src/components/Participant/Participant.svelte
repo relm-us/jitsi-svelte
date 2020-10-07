@@ -22,7 +22,7 @@
   <div class="right">
     {#if $participant.video}
       <div class="video">
-        <Video track={$participant.video} />
+        <Video track={$participant.video} mirror={$participant.isLocal} />
       </div>
     {/if}
   </div>

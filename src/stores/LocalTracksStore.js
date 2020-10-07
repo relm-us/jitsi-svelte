@@ -114,8 +114,6 @@ function createLocalTracksStore() {
     // LocalTracksStore can be set
     set,
 
-    // add: (tracks) => {},
-
     count: () => {
       return Object.values(get()).length
     },
@@ -152,6 +150,11 @@ function createLocalTracksStore() {
   }
 }
 
-const localTracks = createLocalTracksStore()
+const localTracksStore = createLocalTracksStore()
 
-export { localTracks, localAudioLevel, requestedTracks, createAudioLevelStore }
+export {
+  localTracksStore,
+  localAudioLevel,
+  requestedTracks,
+  createAudioLevelStore,
+}
