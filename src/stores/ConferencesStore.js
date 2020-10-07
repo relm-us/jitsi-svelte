@@ -55,11 +55,6 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
           openBridgeChannel: 'websocket',
         })
 
-        localTracksStore.subscribe(($tracks) => {
-          const tracks = Object.values($tracks)
-          addLocalTracksToConference(conference, tracks)
-        })
-
         const setStatus = (state) => {
           switch (state) {
             case ConferenceState.JOINING:
@@ -208,6 +203,20 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
     // Initial derived store value
     null
   )
+
+  // Whenever the conference OR the localTrackStore changes, we want to re-add
+  // local tracks to the conference.
+  derived([store, localTracksStore], ([$store, $localTracks]) => {
+    const tracks = Object.values($localTracks)
+    const conference = $store
+    return { conference, tracks }
+  }).subscribe(($props) => {
+    if ($props.conference && $props.tracks) {
+      addLocalTracksToConference($props.conference, $props.tracks)
+    } else {
+      // TODO: remove local tracks?
+    }
+  })
 
   /**
    * A store containing all participant stores, both local and remote.
