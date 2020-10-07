@@ -36,6 +36,9 @@
 {/each}
 
 <style>
+  p {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
   .centered {
     display: flex;
     flex-direction: column;
