@@ -1,14 +1,14 @@
 <script>
   import { createEventDispatcher } from 'svelte'
 
-  import groupBy from '/utils/groupBy.js'
+  import groupBy from '../../../utils/groupBy.js'
   import Select from './Select'
 
   import {
     deviceList,
     defaultDevices,
     selectedDevices,
-  } from '/stores/DeviceListStore.js'
+  } from '../../../stores/DeviceListStore.js'
 
   import audioIcon from './images/audio-enabled.svg'
   import videoIcon from './images/video-enabled.svg'

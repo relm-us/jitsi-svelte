@@ -1,7 +1,11 @@
 <script>
-  import { createConnectionStore, defaultConfigStore } from './index.js'
-  import Conference from '/components/Conference'
-  import Mirror from '/components/Mirror'
+  import {
+    createConnectionStore,
+    defaultConfigStore,
+    Mirror,
+  } from 'jitsi-svelte'
+
+  import Conference from './Conference'
 
   let mirrorPage = true
 

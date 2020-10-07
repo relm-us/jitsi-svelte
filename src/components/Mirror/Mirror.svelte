@@ -2,18 +2,18 @@
   import { onMount, createEventDispatcher } from 'svelte'
   import { spring } from 'svelte/motion'
 
-  import canAutoPermit from '/jitsi/canAutoPermit.js'
-  import { deviceList, selectedDevices } from '/stores/DeviceListStore.js'
+  import canAutoPermit from '../../jitsi/canAutoPermit.js'
+  import { deviceList, selectedDevices } from '../../stores/DeviceListStore.js'
   import {
     localTracksStore,
     localAudioLevel,
     requestedTracks,
-  } from '/stores/LocalTracksStore.js'
+  } from '../../stores/LocalTracksStore.js'
 
-  import Video from '/components/Video'
-  import Audio from '/components/Audio'
-  import ContinueButton from '/components/ContinueButton'
+  import Video from '../Video'
+  import Audio from '../Audio'
 
+  import ContinueButton from './ContinueButton'
   import DeviceSelector from './DeviceSelector'
 
   import videoEnabledIcon from './images/video-enabled.svg'

@@ -1,6 +1,6 @@
 import omit from 'just-omit'
 import { derived, writable, get } from 'svelte/store'
-import { wireEventListeners } from '/utils/events.js'
+import { wireEventListeners } from '../utils/events.js'
 
 function createSingleParticipantStore(isLocal = false) {
   const fieldsStore = writable({

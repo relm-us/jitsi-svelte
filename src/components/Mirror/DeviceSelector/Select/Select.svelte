@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import hasAncestor from '/utils/hasAncestor.js'
+  import hasAncestor from '../../../../utils/hasAncestor.js'
   import {
     KEY_RETURN,
     KEY_SPACE,

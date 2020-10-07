@@ -1,5 +1,5 @@
 <script>
-  import Video from '../Video'
+  import { Video } from '../../src/index.js'
 
   export let participantId
   export let participant

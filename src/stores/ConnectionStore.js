@@ -1,6 +1,6 @@
 import { writable, derived, get } from 'svelte/store'
 import { createConferencesStore } from './ConferencesStore.js'
-import { wireEventListeners } from '/utils/events.js'
+import { wireEventListeners } from '../utils/events.js'
 
 import '../jitsi/init.js'
 

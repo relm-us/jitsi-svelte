@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 
-import ready from '/utils/ready.js'
+import ready from '../utils/ready.js'
 
 /**
  * The DeviceListStore is responsible for being an up-to-date list of media devices

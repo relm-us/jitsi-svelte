@@ -5,10 +5,10 @@ import {
   createParticipantsStore,
   createSingleParticipantStore,
 } from './ParticipantsStore.js'
-import { localTracksStore } from '/stores/LocalTracksStore.js'
+import { localTracksStore } from './LocalTracksStore.js'
 
-import { addLocalTracksToConference } from '/jitsi/tracks.js'
-import { trackDirection, wireEventListeners } from '/utils/events.js'
+import { addLocalTracksToConference } from '../jitsi/tracks.js'
+import { trackDirection, wireEventListeners } from '../utils/events.js'
 
 const CLEANUP_EVENT_LISTENERS_MAX_TIMEOUT = 4000
 

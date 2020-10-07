@@ -1,6 +1,6 @@
 <script>
   import { onMount, afterUpdate, onDestroy } from 'svelte'
-  import { uuidv4 } from '/utils/uuid.js'
+  import { uuidv4 } from '../../utils/uuid.js'
 
   const ENABLE_CHROME_RESUME = false
 
