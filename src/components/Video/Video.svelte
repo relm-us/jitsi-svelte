@@ -22,6 +22,9 @@
   const detach = () => {
     const track = attachedTrack
     if (track && track.detach) {
+      if (!videoElement) {
+        throw new Error('Video element is undefined')
+      }
       track.detach(videoElement)
     }
   }
@@ -35,6 +38,9 @@
     }
     if (track && track.attach) {
       attachedTrack = track
+      if (!videoElement) {
+        throw new Error('Video element is undefined')
+      }
       track.attach(videoElement)
     }
   }
@@ -42,12 +48,12 @@
   onDestroy(detach)
 
   afterUpdate(() => {
-    attach(track)
+    if (videoElement) {
+      attach(track)
+    }
   })
 
   onMount(() => {
-    window.video = videoElement
-
     if (ENABLE_CHROME_RESUME) {
       /**
        * On Chrome, the video stream is cut (goes black) whenever the OS suspends/

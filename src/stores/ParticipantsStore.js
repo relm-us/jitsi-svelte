@@ -39,6 +39,22 @@ function createSingleParticipantStore(isLocal = false) {
         TRACK_AUDIO_LEVEL_CHANGED: (audioLevel) => {
           fieldsStore.update(($fields) => ({ ...$fields, audioLevel }))
         },
+        TRACK_MUTE_CHANGED: (track) => {
+          fieldsStore.update(($fields) => ({
+            ...$fields,
+            audioEnabled: !track.isMuted(),
+          }))
+        },
+      },
+    },
+    video: {
+      track: {
+        TRACK_MUTE_CHANGED: (track) => {
+          fieldsStore.update(($fields) => ({
+            ...$fields,
+            videoEnabled: !track.isMuted(),
+          }))
+        },
       },
     },
   }
@@ -58,6 +74,28 @@ function createSingleParticipantStore(isLocal = false) {
       fieldsStore.update(($fields) => ({ ...$fields, audioLevel }))
     },
 
+    setAudioEnabled: (enabled) => {
+      const tracks = get(tracksStore)
+      if (tracks.audio) {
+        if (enabled) {
+          tracks.audio.unmute()
+        } else {
+          tracks.audio.mute()
+        }
+      }
+    },
+
+    setVideoEnabled: (enabled) => {
+      const tracks = get(tracksStore)
+      if (tracks.video) {
+        if (enabled) {
+          tracks.video.unmute()
+        } else {
+          tracks.video.mute()
+        }
+      }
+    },
+
     updateFieldsFromJitsiParticipant: (participant) => {
       fieldsStore.update(($fields) => {
         return {
@@ -74,6 +112,10 @@ function createSingleParticipantStore(isLocal = false) {
         if (events[trackType]) {
           wireEventListeners('add', track, events[trackType])
         }
+        fieldsStore.update(($fields) => ({
+          ...$fields,
+          [`${trackType}Enabled`]: !track.isMuted(),
+        }))
         tracksStore.update(($tracks) => ({
           ...$tracks,
           [trackType]: track,

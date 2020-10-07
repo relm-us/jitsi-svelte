@@ -13,6 +13,9 @@
   const detach = () => {
     const track = attachedTrack
     if (track && track.detach) {
+      if (!audioElement) {
+        throw new Error('Audio element is undefined')
+      }
       track.detach(audioElement)
     }
   }
@@ -26,6 +29,9 @@
     }
     if (track && track.attach) {
       attachedTrack = track
+      if (!audioElement) {
+        throw new Error('Audio element is undefined')
+      }
       track.attach(audioElement)
     }
   }
@@ -33,7 +39,9 @@
   onDestroy(detach)
 
   afterUpdate(() => {
-    attach(track)
+    if (audioElement) {
+      attach(track)
+    }
   })
 </script>
 

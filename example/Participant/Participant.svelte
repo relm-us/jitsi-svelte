@@ -11,9 +11,30 @@
     <div>Jitsi ID: {$participant.jid}</div>
     <div>Role: {$participant.role}</div>
     <div>Audio Level: {$participant.audioLevel}</div>
-    <div>Audio: {$participant.audioEnabled ? 'enabled' : 'disabled'}</div>
-    <div>Video: {$participant.videoEnabled ? 'enabled' : 'disabled'}</div>
-
+    <div>
+      Audio:
+      {#if $participant.audioEnabled}
+        enabled
+        <button
+          on:click={() => participant.setAudioEnabled(false)}>mute</button>
+      {:else}
+        disabled
+        <button
+          on:click={() => participant.setAudioEnabled(true)}>unmute</button>
+      {/if}
+    </div>
+    <div>
+      Video:
+      {#if $participant.videoEnabled}
+        enabled
+        <button
+          on:click={() => participant.setVideoEnabled(false)}>mute</button>
+      {:else}
+        disabled
+        <button
+          on:click={() => participant.setVideoEnabled(true)}>unmute</button>
+      {/if}
+    </div>
     <div>Screen Enabled: {$participant.screenEnabled}</div>
     <div>Position: {JSON.stringify($participant.position)}</div>
     <div>Size: {$participant.size}</div>
