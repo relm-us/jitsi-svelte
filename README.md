@@ -2,13 +2,13 @@
 
 This library allows you to easily create your own custom [Jitsi](https://jitsi.org/jitsi-meet/) client, in the [Svelte](https://svelte.dev/) framework.
 
-<div align="center">
-  <img src="example/images/screenshot.png" width="350" alt="Simplified Cam/Mic Setup">
-</div>
-
 Jitsi is a free, open-source, web-based video conferencing app that has a handy library called lib-jitsi-meet. However, there are quite a few intricacies to getting it working well, and if you're writing a Svelte3-based app, there is some additional complexity in getting all of the events to work together.
 
-`jitsi-svelte` simplifies all of this and provides the svelte stores you need to build a web-based video conferencing app. It also provides Svelte components for Audio, Video, among others. We use it at [Relm](http://www.relm.us) to power our social virtual world.
+`jitsi-svelte` simplifies all of this and provides the svelte stores you need to build a web-based video conferencing app. It also provides Svelte components for Audio, and Video, among others. We use it at [Relm](http://www.relm.us) to power our social virtual world.
+
+<div align="center">
+  <img src="images/screenshot.png" width="350" alt="Simplified Cam/Mic Setup">
+</div>
 
 We were inspired by Whereby's intro screen and created what we call the "Mirror" component that mimics their UX & design. This `Mirror` can reduce the code you need to write to give a robust setup screen experience for your users.
 

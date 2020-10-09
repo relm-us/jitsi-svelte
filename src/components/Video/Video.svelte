@@ -1,84 +1,60 @@
 <script>
   import { onMount, afterUpdate, onDestroy } from 'svelte'
+  import { writable, derived, get } from 'svelte/store'
   import { uuidv4 } from '../../utils/uuid.js'
-
-  const ENABLE_CHROME_RESUME = false
 
   export let id = uuidv4()
   export let autoPlay = true
   export let fullscreen = false
   // iOS needs this so the video doesn't automatically play full screen
   export let playsInline = true
-  export let track = undefined
+  export let track = null
   export let mirror = false
-  export let onSuspend = null
 
   let attachedTrack
   let videoElement
+
+  const videoElementStore = writable(null)
+  const trackStore = writable(null)
 
   const ATTACH_AFTER_MOUNT_DELAY = 1000
   const SUSPEND_CALLBACK_DELAY = 3000
 
   const detach = () => {
-    const track = attachedTrack
-    if (track && track.detach) {
-      if (!videoElement) {
-        throw new Error('Video element is undefined')
-      }
-      track.detach(videoElement)
+    if (attachedTrack) {
+      attachedTrack.detach(videoElement)
+      attachedTrack = null
     }
   }
 
-  const attach = (track) => {
-    if (track === attachedTrack) {
-      return
-    }
-    if (attachedTrack) {
+  const attach = () => {
+    if (track && track !== attachedTrack) {
       detach()
-    }
-    if (track && track.attach) {
       attachedTrack = track
-      if (!videoElement) {
-        throw new Error('Video element is undefined')
-      }
       track.attach(videoElement)
     }
   }
 
-  onDestroy(detach)
-
-  afterUpdate(() => {
-    if (videoElement) {
-      attach(track)
-    }
-  })
-
   onMount(() => {
-    if (ENABLE_CHROME_RESUME) {
-      /**
-       * On Chrome, the video stream is cut (goes black) whenever the OS suspends/
-       * resumes. We use a little hack here to restore the video stream on resume.
-       *
-       * Since Chrome uses the 'suspend' callback after the OS resumes, we can use
-       * it to restore the video stream. However, on Firefox the 'suspend' callback
-       * happens whenever the `video` tag is mounted. So we ignore 'suspend' events
-       * that occur right after mount, and heed 'suspend' events that happen there-
-       * after.
-       */
-      setTimeout(() => {
-        videoElement.addEventListener('suspend', () => {
-          if (onSuspend) {
-            console.log(
-              `Attempting to restore video after ${
-                SUSPEND_CALLBACK_DELAY / 1000
-              } seconds...`
-            )
-            setTimeout(onSuspend, SUSPEND_CALLBACK_DELAY)
-          }
-        })
-      }, ATTACH_AFTER_MOUNT_DELAY)
-    }
+    console.log('videoElement', videoElement)
+    videoElementStore.set(videoElement)
   })
+
+  // afterUpdate(() => {
+  //   if (track !== get(trackStore)) {
+  //     trackStore.set(track)
+  //   }
+  // })
+
+  // derived([videoElementStore, trackStore], ([$videoElement, $track]) => {
+  //   return { videoElement: $videoElement, track: $track }
+  // }).subscribe(($props) => {
+  //   console.log('$props', $props)
+  //   if ($props.videoElement && $props.track) {
+  //     attach()
+  //   }
+  // })
+  // onDestroy(detach)
 </script>
 
 <!-- Note:

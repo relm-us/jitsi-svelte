@@ -31,7 +31,7 @@
 <div>{$connection ? 'Connected' : 'Not Connected'}</div>
 
 {#each Object.entries($conferences) as [conferenceId, conference], key}
-  <Conference {conferenceId} {conference} />
+  <Conference {conferenceId} {conference} permitEntry={!mirrorPage} />
   <button on:click={() => conferences.leave(conferenceId)}>Leave Conference</button>
 {/each}
 

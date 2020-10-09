@@ -1,5 +1,7 @@
 import SampleApp from './SampleApp.svelte'
 
-new SampleApp({
+const app = new SampleApp({
   target: document.body,
 })
+
+export default app

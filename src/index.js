@@ -1,8 +1,6 @@
-import { defaultConfigStore } from './stores/JitsiConfigStore.js'
-import { createConnectionStore } from './stores/ConnectionStore.js'
+export { default as Audio } from './components/Audio/Audio.svelte'
+export { default as Video } from './components/Video/Video.svelte'
+export { default as Mirror } from './components/Mirror/Mirror.svelte'
 
-import Mirror from './components/Mirror'
-import Audio from './components/Audio'
-import Video from './components/Video'
-
-export { defaultConfigStore, createConnectionStore, Mirror, Audio, Video }
+export { defaultConfigStore } from './stores/JitsiConfigStore.js'
+export { createConnectionStore } from './stores/ConnectionStore.js'

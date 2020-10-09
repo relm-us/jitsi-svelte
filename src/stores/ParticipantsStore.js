@@ -1,5 +1,5 @@
-import omit from 'just-omit'
 import { derived, writable, get } from 'svelte/store'
+import omit from '../utils/omit.js'
 import { wireEventListeners } from '../utils/events.js'
 
 function createSingleParticipantStore(isLocal = false) {

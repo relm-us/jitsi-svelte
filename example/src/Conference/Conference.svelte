@@ -3,9 +3,12 @@
 
   export let conferenceId
   export let conference
+  export let permitEntry = false
 
   const participants = conference.participants
   const status = conference.state
+
+  $: conference.permitEntry(permitEntry)
 </script>
 
 <div class="container">

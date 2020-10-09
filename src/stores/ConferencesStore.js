@@ -1,5 +1,5 @@
 import { writable, derived, get } from 'svelte/store'
-import omit from 'just-omit'
+import omit from '../utils/omit.js'
 
 import {
   createParticipantsStore,
@@ -26,16 +26,13 @@ const ConferenceState = {
 function createSingleConferenceStore(conferenceId, connectionStore) {
   const stateStore = writable(ConferenceState.INITIAL)
 
+  // Boolean flag that signals the user has given permission to enter the conference
+  const permitEntryStore = writable(false)
+
   // Each conference gets a "localParticipantStore" which is what represents
   // the user & the user's local tracks in this particular conference (player
   // can potentially be connected to multiple rooms at once).
   const localParticipantStore = createSingleParticipantStore(true)
-
-  // Whenever local tracks exist, add them to the localParticipant for this conference
-  localTracksStore.subscribe(($tracks) => {
-    localParticipantStore.addTrack($tracks.audio)
-    localParticipantStore.addTrack($tracks.video)
-  })
 
   // A store of objects, keys are participantIds and values are stores
   const remoteParticipantsStore = createParticipantsStore()
@@ -73,18 +70,13 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
         const addRemoveTrack = (track, direction) => {
           let fnName = trackDirection(direction)
 
-          if (track.isLocal()) {
-            // Track gets added to localParticipantStore
-            localParticipantStore[fnName](track)
+          const pId = track.getParticipantId()
+          if (pId) {
+            remoteParticipantsStore.updateParticipant(pId, (pStore) => {
+              pStore[fnName](track)
+            })
           } else {
-            const pId = track.getParticipantId()
-            if (pId) {
-              remoteParticipantsStore.updateParticipant(pId, (pStore) => {
-                pStore[fnName](track)
-              })
-            } else {
-              console.warn(`Track does not have participantId`, track)
-            }
+            console.warn(`Track does not have participantId`, track)
           }
         }
 
@@ -206,12 +198,23 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
 
   // Whenever the conference OR the localTrackStore changes, we want to re-add
   // local tracks to the conference.
-  derived([store, localTracksStore], ([$store, $localTracks]) => {
-    const tracks = Object.values($localTracks)
-    const conference = $store
-    return { conference, tracks }
-  }).subscribe(($props) => {
-    if ($props.conference && $props.tracks) {
+  derived(
+    [store, localTracksStore, permitEntryStore],
+    ([$store, $localTracks, $permitEntry]) => {
+      const conference = $store
+      const tracks = Object.values($localTracks)
+      const permitEntry = $permitEntry
+      return { conference, tracks, permitEntry }
+    }
+  ).subscribe(($props) => {
+    if ($props.conference && $props.tracks && $props.permitEntry) {
+      // Whenever local tracks exist, add them to the localParticipant for this conference
+      // (Allows this participant to see self)
+      localParticipantStore.addTrack($props.tracks.audio)
+      localParticipantStore.addTrack($props.tracks.video)
+
+      // When conference & local tracks exist, add local tracks to the conference
+      // (Allows others to see this participant)
       addLocalTracksToConference($props.conference, $props.tracks)
     } else {
       // TODO: remove local tracks?
@@ -262,6 +265,9 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
     subscribe: store.subscribe,
     state: stateStore,
     participants: allParticipantsStore,
+    permitEntry: (permit) => {
+      permitEntryStore.set(permit)
+    },
   }
 }
 
