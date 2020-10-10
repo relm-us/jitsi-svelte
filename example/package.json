@@ -20,7 +20,7 @@
     "svelte": "^3.29.0"
   },
   "dependencies": {
-    "jitsi-svelte": "0.2.0",
+    "jitsi-svelte": "0.3.0",
     "sirv-cli": "^1.0.0"
   },
   "scripts": {
