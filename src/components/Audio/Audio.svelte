@@ -16,7 +16,7 @@
 
   afterUpdate(() => store.setTrack(track))
 
-  onDestroy(store.detach)
+  onDestroy(store.destroy)
 </script>
 
 <!-- Note:

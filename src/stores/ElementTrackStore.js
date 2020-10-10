@@ -28,7 +28,7 @@ function createElementAndTrackStore() {
     return { element: $element, track: $track }
   })
 
-  store.subscribe(($props) => {
+  const unsubscribe = store.subscribe(($props) => {
     if ($props.element && $props.track) {
       attach()
     }
@@ -37,9 +37,10 @@ function createElementAndTrackStore() {
   return {
     subscribe: store.subscribe,
 
-    attach,
-
-    detach,
+    destroy: () => {
+      detach()
+      unsubscribe()
+    },
 
     setElement: (element) => {
       elementStore.set(element)
