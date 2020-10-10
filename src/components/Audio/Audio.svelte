@@ -1,48 +1,22 @@
 <script>
   import { afterUpdate, onDestroy } from 'svelte'
   import { uuidv4 } from '../../utils/uuid.js'
+  import { createElementAndTrackStore } from '../../stores/ElementTrackStore.js'
 
   export let id = uuidv4()
   export let loop = false
   export let autoPlay = true
   export let track = undefined
 
-  let attachedTrack
   let audioElement
 
-  const detach = () => {
-    const track = attachedTrack
-    if (track && track.detach) {
-      if (!audioElement) {
-        throw new Error('Audio element is undefined')
-      }
-      track.detach(audioElement)
-    }
-  }
+  const store = createElementAndTrackStore()
 
-  const attach = (track) => {
-    if (track === attachedTrack) {
-      return
-    }
-    if (attachedTrack) {
-      detach()
-    }
-    if (track && track.attach) {
-      attachedTrack = track
-      if (!audioElement) {
-        throw new Error('Audio element is undefined')
-      }
-      track.attach(audioElement)
-    }
-  }
+  onMount(() => store.setElement(audioElement))
 
-  onDestroy(detach)
+  afterUpdate(() => store.setTrack(track))
 
-  afterUpdate(() => {
-    if (audioElement) {
-      attach(track)
-    }
-  })
+  onDestroy(store.detach)
 </script>
 
 <!-- Note:

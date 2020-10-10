@@ -1,7 +1,7 @@
 <script>
   import { onMount, afterUpdate, onDestroy } from 'svelte'
-  import { writable, derived, get } from 'svelte/store'
   import { uuidv4 } from '../../utils/uuid.js'
+  import { createElementAndTrackStore } from '../../stores/ElementTrackStore.js'
 
   export let id = uuidv4()
   export let autoPlay = true
@@ -11,48 +11,15 @@
   export let track = null
   export let mirror = false
 
-  let attachedTrack
   let videoElement
 
-  const videoElementStore = writable(null)
-  const trackStore = writable(null)
+  const store = createElementAndTrackStore()
 
-  const ATTACH_AFTER_MOUNT_DELAY = 1000
-  const SUSPEND_CALLBACK_DELAY = 3000
+  onMount(() => store.setElement(videoElement))
 
-  const detach = () => {
-    if (attachedTrack) {
-      attachedTrack.detach(videoElement)
-      attachedTrack = null
-    }
-  }
+  afterUpdate(() => store.setTrack(track))
 
-  const attach = () => {
-    if (track && track !== attachedTrack) {
-      detach()
-      attachedTrack = track
-      track.attach(videoElement)
-    }
-  }
-
-  onMount(() => {
-    videoElementStore.set(videoElement)
-  })
-
-  afterUpdate(() => {
-    if (track !== get(trackStore)) {
-      trackStore.set(track)
-    }
-  })
-
-  derived([videoElementStore, trackStore], ([$videoElement, $track]) => {
-    return { videoElement: $videoElement, track: $track }
-  }).subscribe(($props) => {
-    if ($props.videoElement && $props.track) {
-      attach()
-    }
-  })
-  onDestroy(detach)
+  onDestroy(store.detach)
 </script>
 
 <!-- Note:
@@ -79,10 +46,10 @@
     width: 100%;
     height: 100%;
   }
-  video.mirror {
+  .mirror {
     transform: scaleX(-1);
   }
-  .video.fullscreen {
+  .fullscreen {
     width: 100%;
     height: 100%;
   }
