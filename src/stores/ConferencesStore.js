@@ -202,9 +202,10 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
     [store, localTracksStore, permitEntryStore],
     ([$store, $localTracks, $permitEntry]) => {
       const conference = $store
-      const tracks = Object.values($localTracks)
+      const tracks = $localTracks
       const permitEntry = $permitEntry
-      return { conference, tracks, permitEntry }
+      const r = { conference, tracks, permitEntry }
+      return r
     }
   ).subscribe(($props) => {
     if ($props.conference && $props.tracks && $props.permitEntry) {
@@ -213,9 +214,10 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
       localParticipantStore.addTrack($props.tracks.audio)
       localParticipantStore.addTrack($props.tracks.video)
 
+      const tracksList = Object.values($props.tracks)
       // When conference & local tracks exist, add local tracks to the conference
       // (Allows others to see this participant)
-      addLocalTracksToConference($props.conference, $props.tracks)
+      addLocalTracksToConference($props.conference, tracksList)
     } else {
       // TODO: remove local tracks?
     }

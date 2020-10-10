@@ -36,25 +36,23 @@
   }
 
   onMount(() => {
-    console.log('videoElement', videoElement)
     videoElementStore.set(videoElement)
   })
 
-  // afterUpdate(() => {
-  //   if (track !== get(trackStore)) {
-  //     trackStore.set(track)
-  //   }
-  // })
+  afterUpdate(() => {
+    if (track !== get(trackStore)) {
+      trackStore.set(track)
+    }
+  })
 
-  // derived([videoElementStore, trackStore], ([$videoElement, $track]) => {
-  //   return { videoElement: $videoElement, track: $track }
-  // }).subscribe(($props) => {
-  //   console.log('$props', $props)
-  //   if ($props.videoElement && $props.track) {
-  //     attach()
-  //   }
-  // })
-  // onDestroy(detach)
+  derived([videoElementStore, trackStore], ([$videoElement, $track]) => {
+    return { videoElement: $videoElement, track: $track }
+  }).subscribe(($props) => {
+    if ($props.videoElement && $props.track) {
+      attach()
+    }
+  })
+  onDestroy(detach)
 </script>
 
 <!-- Note:

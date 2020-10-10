@@ -10,7 +10,10 @@
     <div>Local: {$participant.isLocal}</div>
     <div>Jitsi ID: {$participant.jid}</div>
     <div>Role: {$participant.role}</div>
-    <div>Audio Level: {$participant.audioLevel}</div>
+    <div>
+      Audio Level:
+      <div>{$participant.audioLevel}</div>
+    </div>
     <div>
       Audio:
       {#if $participant.audioEnabled}
