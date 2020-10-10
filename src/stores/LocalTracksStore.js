@@ -1,4 +1,5 @@
 import { derived, writable, get } from 'svelte/store'
+import omit from '../utils/omit.js'
 import { selectedDevices as selectedDevicesStore } from './DeviceListStore.js'
 
 const { TRACK_AUDIO_LEVEL_CHANGED } = JitsiMeetJS.events.track
@@ -48,7 +49,7 @@ function createAudioLevelStore() {
 
 const localAudioLevel = createAudioLevelStore()
 
-async function createLocalTracks(requestedTrackNames, selectedDevices) {
+async function createLocalTracks(requestedTrackNames, selectedDevices = {}) {
   let tracks = {}
 
   const options = { devices: requestedTrackNames }
@@ -93,7 +94,7 @@ async function createLocalTracks(requestedTrackNames, selectedDevices) {
 
 function createLocalTracksStore() {
   const store = writable({})
-  const { subscribe, set } = store
+  const { subscribe, update, set } = store
 
   function clear() {
     const tracks = get(store)
@@ -116,6 +117,28 @@ function createLocalTracksStore() {
 
     count: () => {
       return Object.values(get()).length
+    },
+
+    /**
+     * Switch from sharing video to sharing desktop, or back if `desktop` is false.
+     */
+    shareDesktop: async (desktop = true) => {
+      const desktopTracks = await createLocalTracks([
+        desktop ? 'desktop' : 'video',
+      ])
+
+      update(($tracks) => {
+        if ($tracks.video) {
+          $tracks.video.dispose()
+        }
+        return omit($tracks, ['video'])
+      })
+
+      setTimeout(() => {
+        update(($tracks) => {
+          return { ...$tracks, ...desktopTracks }
+        })
+      }, 1000)
     },
 
     /**

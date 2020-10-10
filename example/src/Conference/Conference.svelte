@@ -17,7 +17,7 @@
   <div>
     Participants:
     {#each Object.entries($participants) as [participantId, participant], key}
-      <Participant {participantId} {participant} />
+      <Participant {participant} />
     {/each}
   </div>
 </div>

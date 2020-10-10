@@ -16,7 +16,7 @@ function addLocalTracksToConference(conference, localTracks) {
     if (conferenceLocalTracks.indexOf(track) === -1) {
       promises.push(
         conference.addTrack(track).catch((err) => {
-          _reportError('Failed to add local track to conference', err)
+          console.warn('Failed to add local track to conference', err)
         })
       )
     }
@@ -41,7 +41,7 @@ function removeLocalTracksFromConference(conference, localTracks) {
         // JitsiTrack#dispose() call. So we should ignore this error
         // here.
         if (err.name !== JitsiTrackErrors.TRACK_IS_DISPOSED) {
-          _reportError('Failed to remove local track from conference', err)
+          console.warn('Failed to remove local track from conference', err)
         }
       })
     )

@@ -1,7 +1,6 @@
 <script>
   import { Video } from 'jitsi-svelte'
 
-  export let participantId
   export let participant
 </script>
 
@@ -38,7 +37,18 @@
           on:click={() => participant.setVideoEnabled(true)}>unmute</button>
       {/if}
     </div>
-    <div>Screen Enabled: {$participant.screenEnabled}</div>
+    <div>
+      Desktop:
+      {#if $participant.desktopEnabled}
+        enabled
+        <button
+          on:click={() => participant.setDesktopEnabled(false)}>mute</button>
+      {:else}
+        disabled
+        <button
+          on:click={() => participant.setDesktopEnabled(true)}>unmute</button>
+      {/if}
+    </div>
     <div>Position: {JSON.stringify($participant.position)}</div>
     <div>Size: {$participant.size}</div>
     <div>Visible: {$participant.visible}</div>
@@ -47,6 +57,11 @@
     {#if $participant.video}
       <div class="video">
         <Video track={$participant.video} mirror={$participant.isLocal} />
+      </div>
+    {/if}
+    {#if $participant.desktop}
+      <div class="video">
+        <Video track={$participant.desktop} />
       </div>
     {/if}
   </div>

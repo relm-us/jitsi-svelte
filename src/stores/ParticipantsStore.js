@@ -10,7 +10,7 @@ function createSingleParticipantStore(isLocal = false) {
     audioLevel: 0.0,
     audioEnabled: false,
     videoEnabled: false,
-    screenEnabled: false,
+    desktopEnabled: false,
 
     // {x: float, y: float} | null
     position: null,

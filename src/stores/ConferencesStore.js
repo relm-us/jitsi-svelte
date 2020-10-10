@@ -42,6 +42,8 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
     ($localParticipant) => (localParticipantId = $localParticipant.jid)
   )
 
+  const cachedTrackParticipantId = new WeakMap()
+
   const store = derived(
     connectionStore,
     ($connection, set) => {
@@ -70,8 +72,12 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
         const addRemoveTrack = (track, direction) => {
           let fnName = trackDirection(direction)
 
-          const pId = track.getParticipantId()
+          let pId = track.getParticipantId()
+          if (!pId) {
+            pId = cachedTrackParticipantId.get(track)
+          }
           if (pId) {
+            cachedTrackParticipantId.set(track, pId)
             remoteParticipantsStore.updateParticipant(pId, (pStore) => {
               pStore[fnName](track)
             })
@@ -214,9 +220,9 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
       localParticipantStore.addTrack($props.tracks.audio)
       localParticipantStore.addTrack($props.tracks.video)
 
-      const tracksList = Object.values($props.tracks)
       // When conference & local tracks exist, add local tracks to the conference
       // (Allows others to see this participant)
+      const tracksList = Object.values($props.tracks)
       addLocalTracksToConference($props.conference, tracksList)
     } else {
       // TODO: remove local tracks?

@@ -1,6 +1,7 @@
 <script>
   import {
     createConnectionStore,
+    localTracksStore,
     defaultConfigStore,
     Mirror,
   } from 'jitsi-svelte'
@@ -8,6 +9,8 @@
   import Conference from './Conference'
 
   let mirrorPage = true
+
+  let shareDesktop = false
 
   // Note that as soon as you provide a ConfigStore for the connection, it will connect.
   // If you want to delay connecting until some future point, just use 'null' as the store.
@@ -34,6 +37,14 @@
   <Conference {conferenceId} {conference} permitEntry={!mirrorPage} />
   <button on:click={() => conferences.leave(conferenceId)}>Leave Conference</button>
 {/each}
+
+<button
+  on:click={() => {
+    shareDesktop = !shareDesktop
+    localTracksStore.shareDesktop(shareDesktop)
+  }}>
+  {shareDesktop ? 'Stop Sharing Screen' : 'Share Screen'}
+</button>
 
 <style>
   p {
