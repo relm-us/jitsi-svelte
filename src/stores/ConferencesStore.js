@@ -272,6 +272,7 @@ function createSingleConferenceStore(conferenceId, connectionStore) {
   return {
     subscribe: store.subscribe,
     state: stateStore,
+    localParticipant: localParticipantStore,
     participants: allParticipantsStore,
     permitEntry: (permit) => {
       permitEntryStore.set(permit)
