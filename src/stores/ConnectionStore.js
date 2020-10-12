@@ -106,13 +106,16 @@ function createConnectionStore(configStore) {
     null
   )
 
+  const conferencesStore = createConferencesStore(store)
   return {
     subscribe: store.subscribe,
     state: stateStore,
     quality: qualityStore,
 
     // Each connection can have multiple conferences (rooms)
-    conferencesStore: createConferencesStore(store),
+    conferencesStore: conferencesStore,
+
+    joinConference: (conferenceId) => conferencesStore.join(conferenceId),
   }
 }
 
