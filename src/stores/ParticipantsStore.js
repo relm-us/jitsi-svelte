@@ -3,32 +3,34 @@ import omit from '../utils/omit.js'
 import { wireEventListeners } from '../utils/events.js'
 
 function createSingleParticipantStore(isLocal = false) {
+  // Stores participant properties
   const fieldsStore = writable({
     jid: null,
     role: null,
 
-    audioLevel: 0.0,
     audioEnabled: false,
     videoEnabled: false,
     desktopEnabled: false,
 
-    // {x: float, y: float} | null
-    position: null,
-    // float | null
-    size: null,
     // boolean
-    visible: false,
-    // boolean
-    isLocal,
+    isLocal: false,
   })
 
-  // Stores JitsiTrack by track type ('audio' | 'video' | 'desktop')
+  // Stores JitsiTrack by track type ('audio' | 'video')
   const tracksStore = writable({})
 
+  // Store audioLevel separately because it changes frequently (~40ms)
+  const audioLevelStore = writable(0.0)
+
+  // The main participant store, derived from other stores
   const store = derived(
-    [fieldsStore, tracksStore],
-    ([$fields, $tracks], set) => {
-      set({ ...$fields, ...$tracks })
+    [fieldsStore, tracksStore, audioLevelStore],
+    ([$fields, $tracks, $audioLevel], set) => {
+      set({
+        ...$fields,
+        ...$tracks,
+        audioLevel: $audioLevel,
+      })
     },
     {}
   )
@@ -37,7 +39,7 @@ function createSingleParticipantStore(isLocal = false) {
     audio: {
       track: {
         TRACK_AUDIO_LEVEL_CHANGED: (audioLevel) => {
-          fieldsStore.update(($fields) => ({ ...$fields, audioLevel }))
+          audioLevelStore.set(audioLevel)
         },
         TRACK_MUTE_CHANGED: (track) => {
           fieldsStore.update(($fields) => ({
@@ -70,10 +72,6 @@ function createSingleParticipantStore(isLocal = false) {
       fieldsStore.update(($fields) => ({ ...$fields, role }))
     },
 
-    setAudioLevel: (audioLevel) => {
-      fieldsStore.update(($fields) => ({ ...$fields, audioLevel }))
-    },
-
     setAudioEnabled: (enabled) => {
       const tracks = get(tracksStore)
       if (tracks.audio) {
@@ -94,6 +92,10 @@ function createSingleParticipantStore(isLocal = false) {
           tracks.video.mute()
         }
       }
+    },
+
+    setAudioLevel: (audioLevel) => {
+      audioLevelStore.set(audioLevel)
     },
 
     updateFieldsFromJitsiParticipant: (participant) => {
@@ -133,10 +135,10 @@ function createSingleParticipantStore(isLocal = false) {
       }
     },
 
-    // Expose read-only versions of fields & tracks stores so
-    // they can be subscribed to individually
+    // Expose read-only versions of stores so they can be subscribed to individually
     fieldsStore: { subscribe: fieldsStore.subscribe },
     tracksStore: { subscribe: tracksStore.subscribe },
+    audioLevelStore: { subscribe: audioLevelStore.subscribe },
   }
 }
 
