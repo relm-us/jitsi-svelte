@@ -1,5 +1,5 @@
 <script>
-  import { afterUpdate, onDestroy } from 'svelte'
+  import { onMount, afterUpdate, onDestroy } from 'svelte'
   import { uuidv4 } from '../../utils/uuid.js'
   import { createElementAndTrackStore } from '../../stores/ElementTrackStore.js'
 
