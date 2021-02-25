@@ -2,7 +2,7 @@
   import {
     createConnectionStore,
     localTracksStore,
-    defaultConfigStore,
+    DEFAULT_JITSI_CONFIG,
     Mirror,
   } from 'jitsi-svelte'
 
@@ -14,7 +14,7 @@
 
   // Note that as soon as you provide a ConfigStore for the connection, it will connect.
   // If you want to delay connecting until some future point, just use 'null' as the store.
-  const connection = createConnectionStore(defaultConfigStore)
+  const connection = createConnectionStore(DEFAULT_JITSI_CONFIG, 'relm-test')
 
   const conferences = connection.conferencesStore
 
@@ -22,7 +22,7 @@
   // can join multiple conferences simultaneously. Joining a conference is independent of
   // actually sharing your video/audio--the Mirror page lets the user set up their video/
   // audio and share it with the conference room.
-  conferences.join('jitsi-svelte-test')
+  conferences.join('relm-test')
 </script>
 
 {#if mirrorPage}
@@ -35,14 +35,17 @@
 
 {#each Object.entries($conferences) as [conferenceId, conference], key}
   <Conference {conferenceId} {conference} permitEntry={!mirrorPage} />
-  <button on:click={() => conferences.leave(conferenceId)}>Leave Conference</button>
+  <button on:click={() => conferences.leave(conferenceId)}
+    >Leave Conference</button
+  >
 {/each}
 
 <button
   on:click={() => {
     shareDesktop = !shareDesktop
     localTracksStore.shareDesktop(shareDesktop)
-  }}>
+  }}
+>
   {shareDesktop ? 'Stop Sharing Screen' : 'Share Screen'}
 </button>
 

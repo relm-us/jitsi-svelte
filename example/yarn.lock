@@ -856,6 +856,14 @@
     magic-string "^0.25.2"
     resolve "^1.11.0"
 
+"@rollup/plugin-image@^2.0.5":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-image/-/plugin-image-2.0.6.tgz#2e6d7a72b25df81aa80c8c0866d45a45c1e6a265"
+  integrity sha512-bB+spXogbPiFjhBS7i8ajUOgOnVwWK3bnJ6VroxKey/q8/EPRkoSh+4O1qPCw97qMIDspF4TlzXVBhZ7nojIPw==
+  dependencies:
+    "@rollup/pluginutils" "^3.1.0"
+    mini-svg-data-uri "^1.2.3"
+
 "@rollup/plugin-node-resolve@^8.0.0":
   version "8.4.0"
   resolved "https://registry.yarnpkg.com/@rollup/plugin-node-resolve/-/plugin-node-resolve-8.4.0.tgz#261d79a680e9dc3d86761c14462f24126ba83575"
@@ -1318,12 +1326,11 @@ jest-worker@^26.2.1:
     merge-stream "^2.0.0"
     supports-color "^7.0.0"
 
-jitsi-svelte@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/jitsi-svelte/-/jitsi-svelte-0.2.0.tgz#dd1e9348c4896070ad3bc3c1ec5e8b0efba5830b"
-  integrity sha512-ghTt/yCAvtlZYTKnY7TJMWUOmWjaFIk8uQpIsh9kYz9jAgVi7dREuQP8XablnAN/X3Vk3tEo0fU66+GZDg2oVQ==
+jitsi-svelte@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/jitsi-svelte/-/jitsi-svelte-0.3.0.tgz#edc13ae66ac6ac9e1ed9b1c1f442caf346c98c39"
+  integrity sha512-83vT9s2vlXIpWe3QlwCdgqYCsWGFHgqR9+eWZHDpieZGyqB/ubZcDK9bLW5cDdYYZ2xsjqTWZ8z2OHdM/+aveg==
   dependencies:
-    just-omit "^1.1.0"
     keycode-js "^3.1.0"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
@@ -1347,11 +1354,6 @@ json5@^2.1.2:
   integrity sha512-KXPvOm8K9IJKFM0bmdn8QXh7udDh1g/giieX0NLCaMnb4hEiVFqnop2ImTXCc5e0/oHz3LTqmHGtExn5hfMkOA==
   dependencies:
     minimist "^1.2.5"
-
-just-omit@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/just-omit/-/just-omit-1.1.0.tgz#ea507d3a251a36383d09e47324181d7f4acb2ea6"
-  integrity sha512-MBDr0a1Yyzht8KK3RS2oUKtJSKRrm+6txDuEFJOXoALnX4h+FcQyWSKVNDlZiClOSIRf1PkzJ+QkKm0pjLS7Mw==
 
 keycode-js@^3.1.0:
   version "3.1.0"
@@ -1423,6 +1425,11 @@ mime@^2.3.1:
   version "2.4.6"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.6.tgz#e5b407c90db442f2beb5b162373d07b69affa4d1"
   integrity sha512-RZKhC3EmpBchfTGBVb8fb+RL2cWyw/32lshnsETttkBAyAUXSGHxbEJWWRXc751DrIxG1q04b8QwMbAwkRPpUA==
+
+mini-svg-data-uri@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/mini-svg-data-uri/-/mini-svg-data-uri-1.2.3.tgz#e16baa92ad55ddaa1c2c135759129f41910bc39f"
+  integrity sha512-zd6KCAyXgmq6FV1mR10oKXYtvmA9vRoB6xPSTUJTbFApCtkefDnYueVR1gkof3KcdLZo1Y8mjF2DFmQMIxsHNQ==
 
 minimatch@^3.0.4:
   version "3.0.4"

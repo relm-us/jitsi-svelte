@@ -4,6 +4,8 @@ export { default as Mirror } from './components/Mirror/Mirror.svelte'
 
 export { default as canAutoPermit } from './jitsi/canAutoPermit.js'
 
-export { defaultConfigStore } from './stores/JitsiConfigStore.js'
 export { localTracksStore } from './stores/LocalTracksStore.js'
-export { createConnectionStore } from './stores/ConnectionStore.js'
+export {
+  createConnectionStore,
+  DEFAULT_JITSI_CONFIG,
+} from './stores/ConnectionStore.js'

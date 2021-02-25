@@ -16,14 +16,14 @@ We were inspired by Whereby's intro screen and created what we call the "Mirror"
 
 See the `example/` folder for a sample app that uses `jitsi-svelte`.
 
-In general, you need to create a ConnectionStore via `createConnectionStore` and supply a `JitsiConfigStore` as the parameter; then, join a conference (at this point, the user will see others who've already entered the room), and use a `Mirror` component to let the user configure their mic and camera before entering the room.
+In general, you need to create a ConnectionStore via `createConnectionStore` and supply a `JitsiConfig` as the parameter; then, join a conference (at this point, the user will see others who've already entered the room), and use a `Mirror` component to let the user configure their mic and camera before entering the room.
 
 ```javascript
-import { createConnectionStore, defaultConfigStore, Mirror } from 'jitsi-svelte'
+import { createConnectionStore, DEFAULT_JITSI_CONFIG, Mirror } from 'jitsi-svelte'
 
 import Conference from './Conference'
 
-const connection = createConnectionStore(defaultConfigStore)
+const connection = createConnectionStore(DEFAULT_JITSI_CONFIG, 'jitsi-svelte-test')
 
 connection.conferences.join('jitsi-svelte-test')
 
